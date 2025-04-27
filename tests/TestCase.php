@@ -11,7 +11,7 @@ abstract class TestCase extends BaseTestCase
     {
         $user = User::factory()->create();
 
-        $this->actingAs($user);
+        $this->actingAs($user, 'sanctum');
 
         return $user;
     }
