@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Contracts\SmsSenderInterface;
+use App\Jobs\SendSmsReminderJob;
 use App\Models\Borrower;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
@@ -9,6 +11,15 @@ use App\Services\ReminderMessageService;
 
 class SendRemindersCommand extends Command
 {
+    private SmsSenderInterface $smsSender;
+
+    public function __construct(SmsSenderInterface $smsSender)
+    {
+        parent::__construct();
+
+        $this->smsSender = $smsSender;
+    }
+
     /**
      * The name and signature of the console command.
      *
@@ -45,11 +56,9 @@ class SendRemindersCommand extends Command
         $messageService = new ReminderMessageService();
 
         foreach ($borrowers as $borrower) {
-            $message = $messageService->buildReminderMessage($borrower);
-
-            Log::info("Sending SMS to {$borrower->mobile_number}: {$message}");
+            SendSmsReminderJob::dispatch($borrower);
         }
 
-        $this->info('Default reminders sent successfully.');
+        $this->info('Reminder jobs have been queued.');
     }
 }
