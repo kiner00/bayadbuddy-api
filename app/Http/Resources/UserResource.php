@@ -25,6 +25,7 @@ class UserResource extends JsonResource
             'sms_credits' => $this->sms_credits,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
+            'roles' => $this->getRoleNames()
         ];
     }
 }

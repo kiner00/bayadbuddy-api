@@ -16,7 +16,7 @@ class MeTest extends TestCase
     {
         $this->loginAsUser();
 
-        $response = $this->get('/api/me');
+        $response = $this->getJson('/api/me');
 
         $response->assertStatus(200)
             ->assertJsonStructure([

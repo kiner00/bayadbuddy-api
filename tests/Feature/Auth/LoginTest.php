@@ -13,10 +13,18 @@ class LoginTest extends TestCase
 {
     use RefreshDatabase, WithFaker;
 
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->seedRoles();
+    }
+
     #[Test]
     public function successfully_login_user(): void
     {
         $user = User::factory()->create();
+        $user->assignRole('lender');
 
         $response = $this->postJson('/api/login', [
             'email' => $user->email,
