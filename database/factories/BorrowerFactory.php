@@ -18,9 +18,9 @@ class BorrowerFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => User::factory(), // Automatically create a user for each borrower
+            'user_id' => User::factory(),
             'name' => $this->faker->name(),
-            'mobile_number' => $this->faker->phoneNumber(),
+            'mobile_number' => $this->faker->numerify('09#########'),
             'notes' => $this->faker->sentence(),
         ];
     }
