@@ -5,6 +5,7 @@ use App\Http\Controllers\BorrowerController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DebtController;
 use App\Http\Controllers\DebtorController;
+use App\Http\Controllers\ReminderController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -32,4 +33,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index']);
+
+    // SMS
+    Route::post('/debtors/{borrower}/send-sms', [ReminderController::class, 'sendSms']);
 });
