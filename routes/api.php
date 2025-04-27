@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BorrowerController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DebtController;
+use App\Http\Controllers\DebtorController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -24,4 +26,10 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('/borrowers/{borrower}/debts', [DebtController::class, 'store']);
     Route::get('/borrowers/{borrower}/debts', [DebtController::class, 'index']);
     Route::post('/debts/{debt}/pay', [DebtController::class, 'pay']);
+
+    // Debtors
+    Route::get('/debtors', [DebtorController::class, 'index']);
+
+    // Dashboard
+    Route::get('/dashboard', [DashboardController::class, 'index']);
 });
