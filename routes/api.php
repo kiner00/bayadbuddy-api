@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BorrowerController;
 use App\Http\Controllers\DashboardController;
@@ -37,3 +39,9 @@ Route::group(['middleware' => 'auth:sanctum', 'role:lender', 'role:admin'], func
     // SMS
     Route::post('/debtors/{borrower}/send-sms', [ReminderController::class, 'sendSms']);
 });
+
+Route::middleware(['auth:sanctum', 'role:admin'])->prefix('admin')->group(function () {
+    Route::get('/dashboard', [AdminDashboardController::class, 'index']);
+    Route::get('/users', [AdminUserController::class, 'index']);
+});
+
