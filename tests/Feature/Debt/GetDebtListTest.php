@@ -27,21 +27,28 @@ class GetDebtListTest extends TestCase
             'borrower_id' => $borrower->id,
         ]);
 
-        $response = $this->getJson("/api/borrowers/{$borrower->id}/debts");
+        $response = $this->actingAs($user, 'sanctum')
+            ->getJson("/api/borrowers/{$borrower->id}/debts");
 
         $response->assertStatus(200);
         $response->assertJsonStructure([
             'data' => [
-                '*' => [ // each debt
+                '*' => [
                     'id',
-                    'borrower_id',
+                    'borrower' => [
+                        'id',
+                        'name',
+                        'mobile_number',
+                        'avatar',
+                    ],
                     'amount',
                     'due_date',
-                    'status',
-                    'interest_type',
-                    'interest_value',
                     'created_at',
-                    'updated_at',
+                    'status',
+                    'interest_rate',
+                    'interest_term',
+                    'notes',
+                    'payments',
                 ]
             ]
         ]);

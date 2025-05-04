@@ -23,4 +23,9 @@ class Debt extends Model
     {
         return $this->belongsTo(Borrower::class);
     }
+
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
+    }
 }

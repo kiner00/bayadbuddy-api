@@ -25,24 +25,31 @@ class CreateDebtTest extends TestCase
         $payload = [
             'amount' => 1500,
             'due_date' => now()->addDays(30)->toDateString(),
-            'interest_type' => 'none', // none, percent, fixed
+            'interest_type' => 'none', // still passed, even if not shown in response
             'interest_value' => null,
         ];
 
-        $response = $this->postJson("/api/borrowers/{$borrower->id}/debts", $payload);
+        $response = $this->actingAs($user, 'sanctum')
+            ->postJson("/api/borrowers/{$borrower->id}/debts", $payload);
 
         $response->assertStatus(201)
             ->assertJsonStructure([
                 'data' => [
                     'id',
-                    'borrower_id',
+                    'borrower' => [
+                        'id',
+                        'name',
+                        'mobile_number',
+                        'avatar',
+                    ],
                     'amount',
                     'due_date',
-                    'status',
-                    'interest_type',
-                    'interest_value',
                     'created_at',
-                    'updated_at',
+                    'status',
+                    'interest_rate',
+                    'interest_term',
+                    'notes',
+                    'payments',
                 ]
             ]);
 

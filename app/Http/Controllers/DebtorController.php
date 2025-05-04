@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\DebtorResource;
 use App\Models\Borrower;
+use App\Models\Debt;
 use Illuminate\Http\Request;
 
 class DebtorController extends Controller
@@ -12,16 +13,11 @@ class DebtorController extends Controller
     {
         $user = $request->user();
 
-        $debtors = Borrower::where('user_id', $user->id)
-            ->whereHas('debts', function ($query) {
-                $query->where('status', 'pending');
-            })
-            ->withCount(['debts as unpaid_debts_count' => function ($query) {
-                $query->where('status', 'pending');
-            }])
-            ->latest()
+        $debts = Debt::with(['borrower'])
+            ->whereHas('borrower', fn ($q) => $q->where('user_id', $user->id))
+            ->latest('due_date')
             ->get();
 
-        return DebtorResource::collection($debtors);
+        return DebtorResource::collection($debts);
     }
 }

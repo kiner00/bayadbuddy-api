@@ -39,4 +39,9 @@ return [
         'api_key' => env('SEMAPHORE_API_KEY'),
         'sender_name' => env('SEMAPHORE_SENDER_NAME'),
     ],
+
+    'philsms' => [
+        'api_key'    => env('PHILSMS_API_KEY'),
+        'sender_id'  => env('PHILSMS_SENDER_ID'),
+    ],
 ];

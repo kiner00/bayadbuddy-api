@@ -16,14 +16,20 @@ class DebtResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'borrower_id' => $this->borrower_id,
+            'borrower' => [
+                'id' => $this->borrower->id,
+                'name' => $this->borrower->name,
+                'mobile_number' => $this->borrower->mobile_number,
+                'avatar' => 'https://api.dicebear.com/7.x/initials/svg?seed=' . urlencode($this->borrower->name),
+            ],
             'amount' => $this->amount,
             'due_date' => $this->due_date,
-            'status' => $this->status,
-            'interest_type' => $this->interest_type,
-            'interest_value' => $this->interest_value,
             'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'status' => $this->status,
+            'interest_rate' => $this->interest_value,
+            'interest_term' => $this->interest_term,
+            'notes' => $this->notes,
+            'payments' => PaymentResource::collection($this->whenLoaded('payments')),
         ];
     }
 }

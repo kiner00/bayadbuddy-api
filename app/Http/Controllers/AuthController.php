@@ -5,14 +5,22 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use App\Services\PhoneNumberFormatter;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Laravel\Sanctum\TransientToken;
+use Propaganistas\LaravelPhone\Rules\Phone;
 
 class AuthController extends Controller
 {
+    protected $phoneFormatter;
+
+    public function __construct(PhoneNumberFormatter $phoneFormatter)
+    {
+        $this->phoneFormatter = $phoneFormatter;
+    }
     public function register(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -21,7 +29,7 @@ class AuthController extends Controller
             'last_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'mobile_number' => 'required|string|max:20',
+            'mobile_number' => ['required', 'string', 'max:20', 'unique:users', new Phone('PH')],
         ]);
 
         $user = User::create([
@@ -29,7 +37,7 @@ class AuthController extends Controller
             'middle_name' => $validated['middle_name'] ?? null,
             'last_name' => $validated['last_name'],
             'email' => $validated['email'],
-            'mobile_number' => $validated['mobile_number'],
+            'mobile_number' => $this->phoneFormatter->normalizeTo639($validated['mobile_number']),
             'password' => Hash::make($validated['password']),
             'subscription_status' => 'active',
             'sms_credits' => 30,
@@ -51,9 +59,9 @@ class AuthController extends Controller
         $user = User::where('email', $credentials['email'])->first();
 
         if (! $user || ! Hash::check($credentials['password'], $user->password)) {
-            throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.'],
-            ]);
+            return response()->json([
+                'message' => 'Invalid credentials'
+            ], 401);
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;

@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Propaganistas\LaravelPhone\Rules\Phone;
 
 class BorrowerRequest extends FormRequest
 {
@@ -29,7 +30,7 @@ class BorrowerRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'mobile_number' => ['required', 'string', 'max:20'],
+            'mobile_number' => ['required', 'string', 'max:20', 'unique:borrowers', new Phone('PH')],
             'notes' => ['nullable', 'string', 'max:500'],
         ];
     }

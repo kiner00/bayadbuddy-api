@@ -7,7 +7,9 @@ use App\Http\Controllers\BorrowerController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DebtController;
 use App\Http\Controllers\DebtorController;
+use App\Http\Controllers\PaymentWebhookController;
 use App\Http\Controllers\ReminderController;
+use App\Http\Controllers\SubscriptionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -28,16 +30,24 @@ Route::group(['middleware' => 'auth:sanctum', 'role:lender', 'role:admin'], func
     // Debt
     Route::post('/borrowers/{borrower}/debts', [DebtController::class, 'store']);
     Route::get('/borrowers/{borrower}/debts', [DebtController::class, 'index']);
+    Route::get('/debts/recent', [DebtController::class, 'recentActivity']); #TODO: test
     Route::post('/debts/{debt}/pay', [DebtController::class, 'pay']);
+
+    // SMS
+    Route::post('/debts/{borrower}/send-reminder', [ReminderController::class, 'sendReminder']); #TODO: API TEST
 
     // Debtors
     Route::get('/debtors', [DebtorController::class, 'index']);
+    Route::get('/debts/{debt}', [DebtController::class, 'show']);
 
     // Dashboard
-    Route::get('/dashboard', [DashboardController::class, 'index']);
+    Route::get('/dashboard', [DashboardController::class, 'index']); #TODO: test
 
-    // SMS
-    Route::post('/debtors/{borrower}/send-sms', [ReminderController::class, 'sendSms']);
+    // User
+    Route::post('user/subscribe', [SubscriptionController::class, 'subscribe']);
+
+    // Webhook
+    Route::post('/payment/webhook', [PaymentWebhookController::class, 'handle']);
 });
 
 Route::middleware(['auth:sanctum', 'role:admin'])->prefix('admin')->group(function () {

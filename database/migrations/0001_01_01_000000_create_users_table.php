@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('password');
             $table->string('mobile_number');
             $table->enum('subscription_status', ['active', 'inactive'])->default('active');
+            $table->date('subscription_expires_at')->nullable();
             $table->unsignedInteger('sms_credits')->default(30);
             $table->rememberToken();
             $table->timestamps();

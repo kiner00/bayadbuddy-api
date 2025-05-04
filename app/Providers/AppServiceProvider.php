@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Contracts\SmsSenderInterface;
+use App\Services\SmsProviders\PhilSmsService;
 use App\Services\SmsProviders\SemaphoreSmsService;
 use Illuminate\Support\ServiceProvider;
 
@@ -13,7 +14,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->bind(SmsSenderInterface::class, SemaphoreSmsService::class);
+        $this->app->bind(SmsSenderInterface::class, PhilSmsService::class);
     }
 
     /**

@@ -2,14 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Contracts\SmsSenderInterface;
 use App\Models\Borrower;
+use App\Models\Debt;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class ReminderController extends Controller
 {
-    public function sendSms(Request $request, Borrower $borrower)
+    public function sendReminder(Request $request, $debtId, SmsSenderInterface $smsService)
     {
-        if ($request->user()->id !== $borrower->user_id) {
+        $debt = Debt::with('borrower')->findOrFail($debtId);
+        $borrower = $debt->borrower;
+
+        if (!$borrower || $request->user()->id !== $borrower->user_id) {
             abort(403, 'Unauthorized.');
         }
 
@@ -17,13 +23,13 @@ class ReminderController extends Controller
             'message' => ['nullable', 'string', 'max:500'],
         ]);
 
-        $message = $validated['message'] ?? "Hi {$borrower->name}, you still have outstanding balances with us. Please settle soon. Thank you!";
+        $message = $validated['message']
+            ?? "Hi {$borrower->name}, your ₱" . number_format($debt->amount, 0) . " debt is due on {$debt->due_date}. Please settle it soon. Thank you!";
 
-        // Simulate SMS sending (later integrate actual SMS gateway)
-        \Log::info("Sending SMS to {$borrower->mobile_number}: {$message}");
+        $sent = $smsService->send($borrower->mobile_number, $message);
 
         return response()->json([
-            'message' => 'SMS reminder sent successfully.',
+            'message' => $sent ? 'SMS reminder sent successfully.' : 'SMS failed to send.',
         ]);
     }
 }

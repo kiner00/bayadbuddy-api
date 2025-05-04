@@ -16,9 +16,18 @@ class DebtorResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
-            'mobile_number' => $this->mobile_number,
-            'unpaid_debts_count' => $this->unpaid_debts_count ?? 0,
+
+            'borrower' => [
+                'id' => $this->borrower->id,
+                'name' => $this->borrower->name,
+                'mobile_number' => $this->borrower->mobile_number,
+            ],
+
+            'amount' => $this->amount,
+            'due_date' => $this->due_date,
+            'status' => $this->status,
+            'interest_rate' => $this->interest_value,
+            'notes' => $this->notes,
         ];
     }
 }

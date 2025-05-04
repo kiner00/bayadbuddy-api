@@ -38,16 +38,19 @@ class GetDebtorsTest extends TestCase
                 'data' => [
                     '*' => [
                         'id',
-                        'name',
-                        'mobile_number',
-                        'unpaid_debts_count',
+                        'borrower' => [
+                            'id',
+                            'name',
+                            'mobile_number',
+                        ],
+                        'amount',
+                        'due_date',
+                        'status',
+                        'interest_rate',
+                        'notes',
                     ]
                 ]
             ]);
-
-        $responseData = $response->json('data');
-
-        $this->assertCount(1, $responseData); // Only borrower1 should appear
     }
 
     #[Test]

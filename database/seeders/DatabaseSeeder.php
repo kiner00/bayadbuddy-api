@@ -31,5 +31,18 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('password'), // Default password: 'password'
             'email_verified_at' => now(),
         ]);
+
+        $admin->assignRole($adminRole);
+
+        $user = User::firstOrCreate([
+            'email' => 'user@bayadbuddy.ph',
+        ], [
+            'first_name' => 'User',
+            'middle_name' => '',
+            'last_name' => 'User',
+            'mobile_number' => '09170000000',
+            'password' => Hash::make('password'), // Default password: 'password'
+            'email_verified_at' => now(),
+        ]);
     }
 }

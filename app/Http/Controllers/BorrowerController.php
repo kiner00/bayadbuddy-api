@@ -6,13 +6,21 @@ namespace App\Http\Controllers;
 use App\Http\Requests\BorrowerRequest;
 use App\Http\Resources\BorrowerResource;
 use App\Models\Borrower;
+use App\Services\PhoneNumberFormatter;
 use Illuminate\Http\Request;
 
 class BorrowerController extends Controller
 {
+    protected $phoneFormatter;
+
+    public function __construct(PhoneNumberFormatter $phoneFormatter)
+    {
+        $this->phoneFormatter = $phoneFormatter;
+    }
+
     public function index(Request $request)
     {
-        $borrowers = Borrower::where('user_id', $request->user()->id)->latest()->get();
+        $borrowers = Borrower::with('debts')->where('user_id', $request->user()->id)->latest()->paginate();
 
         return BorrowerResource::collection($borrowers);
     }
@@ -21,7 +29,7 @@ class BorrowerController extends Controller
         $borrower = Borrower::create([
             'user_id' => $request->user()->id,
             'name' => $request->name,
-            'mobile_number' => $request->mobile_number,
+            'mobile_number' => $this->phoneFormatter->normalizeTo639($request->mobile_number),
             'notes' => $request->notes,
         ]);
 
