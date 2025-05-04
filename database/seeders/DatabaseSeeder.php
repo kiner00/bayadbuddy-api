@@ -44,5 +44,9 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('password'), // Default password: 'password'
             'email_verified_at' => now(),
         ]);
+
+        $this->call([
+            SubscriptionPlanSeeder::class,
+        ]);
     }
 }

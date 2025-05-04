@@ -7,6 +7,7 @@ use App\Http\Requests\BorrowerRequest;
 use App\Http\Resources\BorrowerResource;
 use App\Models\Borrower;
 use App\Services\PhoneNumberFormatter;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class BorrowerController extends Controller
@@ -24,10 +25,18 @@ class BorrowerController extends Controller
 
         return BorrowerResource::collection($borrowers);
     }
-    public function store(BorrowerRequest $request): BorrowerResource
+    public function store(BorrowerRequest $request)
     {
+        $user = auth()->user();
+
+        if (!$user->canAddBorrower()) {
+            return response()->json([
+                'message' => 'You’ve reached your borrower limit. Upgrade your plan to add more.',
+            ], 403);
+        }
+
         $borrower = Borrower::create([
-            'user_id' => $request->user()->id,
+            'user_id' => $user->id,
             'name' => $request->name,
             'mobile_number' => $this->phoneFormatter->normalizeTo639($request->mobile_number),
             'notes' => $request->notes,
